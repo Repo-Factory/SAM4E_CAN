@@ -18,8 +18,8 @@ volatile Can* canController = (volatile Can*)CAN1_BASE;
 #define LED0_PIN    		   PIO_PD22
 #define SET_LIGHT_ON()         LED0_PIO->PIO_CODR = LED0_PIN
 #define SET_LIGHT_OFF()        LED0_PIO->PIO_SODR = LED0_PIN
-#define LIGHT_ON_SUB_ID        0x0F
-#define LIGHT_OFF_SUB_ID       0x01
+#define LIGHT_ON_SUB_ID        0b00000001111
+#define LIGHT_OFF_SUB_ID       0b00000000001
 
 #define LIGHT_MB 	   	0
 #define LIGHT_MB_MASK  	0b00000001111
@@ -27,7 +27,8 @@ volatile Can* canController = (volatile Can*)CAN1_BASE;
 
 void CAN1_Handler(void)
 {
-	switch (canController->CAN_MB[LIGHT_MB].CAN_MID)
+	const uint32_t id_received = canController->CAN_MB[LIGHT_MB].CAN_MID;
+	switch (id_received)
 	{
 		case LIGHT_ON_SUB_ID:
 			SET_LIGHT_ON();
@@ -37,11 +38,6 @@ void CAN1_Handler(void)
 			break;
 	}
 }
-
-/* If the MIDE field in the CAN_MIDx register is set, the mailbox can handle the extended format identifier; otherwise,
-the mailbox handles the standard format identifier. Once a new message is received, its ID is masked with the
-CAN_MAMx value and compared with the CAN_MIDx value. If accepted, the message ID is copied to the
-CAN_MIDx register */
 
 static void hardware_init(void)
 {
