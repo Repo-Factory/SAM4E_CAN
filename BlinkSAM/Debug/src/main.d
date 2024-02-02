@@ -135,7 +135,8 @@ src/main.d src/main.o: ../src/main.c ../src/asf.h \
  ../src/ASF/sam/drivers/pmc/pmc.h ../src/ASF/common/services/clock/pll.h \
  ../src/ASF/common/services/clock/sam4e/pll.h \
  ../src/ASF/sam/drivers/pmc/sleep.h ../src/ASF/sam/utils/fpu/fpu.h \
- ../src/ASF/sam/boards/sam4e_ek/led.h
+ ../src/ASF/sam/boards/sam4e_ek/led.h \
+ ../src/ASF\sam\utils\cmsis\sam4e\include\component\can.h
 
 ../src/asf.h:
 
@@ -420,3 +421,5 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-no
 ../src/ASF/sam/utils/fpu/fpu.h:
 
 ../src/ASF/sam/boards/sam4e_ek/led.h:
+
+../src/ASF\sam\utils\cmsis\sam4e\include\component\can.h:

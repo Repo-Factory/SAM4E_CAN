@@ -64,7 +64,6 @@ static void hardware_init(void)
 	CAN1_PIO->PIO_ABCDSR[1] &= ~(CAN1_RX_PIN | CAN1_TX_PIN);
 	CAN1_PIO->PIO_PDR        =  (CAN1_RX_PIN | CAN1_TX_PIN);
 	
-	
 	/* 
 	 * Enable CAN Controller and interrupts on Mailbox 0
 	 */
