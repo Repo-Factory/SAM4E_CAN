@@ -4,7 +4,7 @@
  */
 
 #include "asf.h"
-#include "ASF\sam\utils\cmsis\sam4e\include\component\can.h"
+#include "can.h"
 
 #define CAN1_PIO        	   PIOC
 #define CAN1_RX_PIN     	   PIO_PC12
