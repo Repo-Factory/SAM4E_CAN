@@ -38,7 +38,7 @@ static void toggle_light(void)
 // Interrupt Routine (ISR) called in Response to SysTick Interrupt Request (IQR)
 void SysTick_Handler(void)
 {
-	if (++tickcount==TOGGLE_PERIOD)
+	if (++tickcount==100)
 	{
 		toggle_light();
 		tickcount = 0;

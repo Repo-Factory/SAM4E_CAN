@@ -1,0 +1,29 @@
+Building on Linux
+
+Need arm-none-eabi-gcc cross compiler for x86 to arm
+Create Cmake File from scratch, using linking file generated from Atmel Studio
+Compile like normal 
+
+Download OpenOCD
+Create this Config file
+------------------------
+interface cmsis-dap
+cmsis_dap_vid_pid 0x03eb 0x2111                 // Use lsusb -d 03eb:2111 Note: You'll get this from command below
+cmsis_dap_serial ATML2081061800000987           // You can get these values from lsusb command, search for atmel
+
+set CHIPNAME SAM4E16E
+source [find target/at91sam4sXX.cfg]
+------------------------
+Type openocd in terminal to listen on port 3333
+
+
+You'll need arm-none-eabi-gdb
+Start this with executable in another terminal like this
+arm-none-eabi-gdb /path/to/binary
+(gdb) target extended-remote localhost:3333
+(gdb) load
+(gdb) monitor reset
+
+
+
+
