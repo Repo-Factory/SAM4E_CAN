@@ -19,6 +19,7 @@ add_executable(
  	src/ASF/sam/utils/cmsis/sam4e/source/templates/gcc/startup_sam4e.c
  	src/ASF/sam/utils/cmsis/sam4e/source/templates/system_sam4e.c
  	src/ASF/sam/utils/syscalls/gcc/syscalls.c
+    src/can_asf.c
  	src/main.c
 )
 

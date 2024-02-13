@@ -35,45 +35,26 @@ static uint32_t light_on = 0;
 
 void CAN1_Handler(void)
 {
-	// const uint32_t id_received = canController->CAN_MB[LIGHT_MB].CAN_MID;
-	// switch (id_received)
-	// {
-	// 	case LIGHT_ON_SUB_ID:
-	// 		SET_LIGHT_ON();
-	// 		break;
-	// 	case LIGHT_OFF_SUB_ID:
-	// 		SET_LIGHT_OFF();
-	// 		break;
-	// }
+	const uint32_t id_received = canController->CAN_MB[LIGHT_MB].CAN_MID;
+	switch (id_received)
+	{
+		case LIGHT_ON_SUB_ID:
+			SET_LIGHT_ON();
+			break;
+		case LIGHT_OFF_SUB_ID:
+			SET_LIGHT_OFF();
+			break;
+	}
 }
 
 void transmit_can_message(void)
 {
 	canController->CAN_MB[1].CAN_MDL = 0x01;
 	canController->CAN_MB[1].CAN_MDH = 0x00;
+	canController->CAN_MB[1].CAN_MCR = 0x00;
 	canController->CAN_TCR |= 1u << 1;
-	// canController->CAN_MB[1].CAN_MCR = 0x00;
 }
 
-static void toggle_light(void)
-{
-	if (light_on)
-		SET_LIGHT_OFF();
-	else
-		SET_LIGHT_ON();
-	TOGGLE(light_on);
-}
-
-// Interrupt Routine (ISR) called in Response to SysTick Interrupt Request (IQR)
-void SysTick_Handler(void)
-{
-	// if (++tickcount==100)
-	// {
-	// 	transmit_can_message();
-	// 	toggle_light();
-	// 	tickcount = 0;
-	// }
-}
 static void hardware_init(void)
 {
 	/* 
@@ -131,7 +112,11 @@ static void hardware_init(void)
 
 int main(void)
 {
-  	hardware_init();
+  	// hardware_init();
+
+
+
+
 }
 
 
