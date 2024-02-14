@@ -1,8 +1,8 @@
 Building on Linux
 
-Need arm-none-eabi-gcc cross compiler for x86 to arm
+Need arm-none-eabi-gcc cross compiler for x86 to arm bare metal
 Create Cmake File from scratch, using linking file generated from Atmel Studio
-Compile like normal 
+Compile like normal cmake mkdir build && cd build && cmake .. && make 
 
 Download OpenOCD
 Create this Config file
@@ -16,14 +16,9 @@ source [find target/at91sam4sXX.cfg]
 ------------------------
 Type openocd in terminal to listen on port 3333
 
-
 You'll need arm-none-eabi-gdb
 Start this with executable in another terminal like this
 arm-none-eabi-gdb /path/to/binary
 (gdb) target extended-remote localhost:3333
 (gdb) load
 (gdb) monitor reset
-
-
-To Build, from top dir
-mkdir build && cd build && cmake .. && make

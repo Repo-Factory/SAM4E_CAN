@@ -115,4 +115,3 @@ int main(void)
 {
   	hardware_init();
 }
-
