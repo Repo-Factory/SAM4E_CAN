@@ -38,6 +38,7 @@
 #define CAN_H_INCLUDED
 
 #include  "compiler.h"
+#include "can.h"
 
 /** @cond 0 */
 /**INDENT-OFF**/

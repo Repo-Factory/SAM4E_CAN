@@ -4,7 +4,8 @@
  */
 
 #include "asf.h"
-#include "can.h"
+// #include "can.h"
+#include "can_asf.h"
 
 #define CAN1_PIO        	   PIOC
 #define CAN1_RX_PIN     	   PIO_PC12
@@ -21,17 +22,15 @@ volatile Can* canController = (volatile Can*)CAN1_BASE;
 #define TOGGLE(BIT) 		   BIT^=1
 #define LIGHT_ON_SUB_ID        0b00000001111
 #define LIGHT_OFF_SUB_ID       0b00000000001
+#define TOGGLE_PERIOD 		   100
+
 #define DISABLE_WR_PROTECT_CAN 0x0043414E
 #define DISABLE_WR_PROTECT_PMC 0x00504D43
 #define BAUD_RATE			   0x00053255
-#define TOGGLE_PERIOD 		   100
 
 #define LIGHT_MB 	   	0
 #define LIGHT_MB_MASK  	0b00000001111
 #define LIGHT_MB_START	0b00000000001
-
-static uint32_t tickcount = 0;
-static uint32_t light_on = 0;
 
 void CAN1_Handler(void)
 {
@@ -106,6 +105,9 @@ static void hardware_init(void)
 	canController->CAN_MB[LIGHT_MB].CAN_MID = LIGHT_MB_START; // Default, will change on message acceptance
 	canController->CAN_MB[LIGHT_MB].CAN_MMR = CAN_MMR_MOT_MB_RX_OVERWRITE;
 
+	/* 
+	 * Setup Transmission Mailbox
+	 */
 	canController->CAN_MB[1].CAN_MMR = CAN_MMR_MOT_MB_TX;
 	canController->CAN_IER |= CAN_IER_MB1;
 }
@@ -113,10 +115,39 @@ static void hardware_init(void)
 int main(void)
 {
   	// hardware_init();
+	const unsigned long ul_sysclk = SystemCoreClock;
+	can_mb_conf_t can0_mailbox;
+	can_mb_conf_t can1_mailbox;
+	pmc_enable_periph_clk(ID_CAN0);
+	pmc_enable_periph_clk(ID_CAN1);
+	can_init(CAN0, ul_sysclk, CAN_BPS_500K);
+	can_init(CAN1, ul_sysclk, CAN_BPS_500K);
+	can_reset_all_mailbox(CAN0);
+	can_reset_all_mailbox(CAN1);
+	can1_mailbox.ul_mb_idx = 0;
+	can1_mailbox.uc_obj_type = CAN_MB_RX_MODE;
+	can1_mailbox.ul_id_msk = CAN_MAM_MIDvA_Msk | CAN_MAM_MIDvB_Msk;
+	can1_mailbox.ul_id = CAN_MID_MIDvA(0x07);
+	can_mailbox_init(CAN1, &can1_mailbox);
+	can0_mailbox.ul_mb_idx = 0;
+	can0_mailbox.uc_obj_type = CAN_MB_TX_MODE;
+	can0_mailbox.uc_tx_prio = 15;
+	can0_mailbox.uc_id_ver = 0;
+	can0_mailbox.ul_id_msk = 0;
+	can_mailbox_init(CAN0, &can0_mailbox);
+	can0_mailbox.ul_id = CAN_MID_MIDvA(0x07);
+	can0_mailbox.ul_datal = 0x12345678;
+	can0_mailbox.ul_datah = 0x87654321;
+	can0_mailbox.uc_length = 8;
+	can_mailbox_write(CAN0, &can0_mailbox);
 
 
-
-
+	can_global_send_transfer_cmd(CAN0, CAN_TCR_MB0);
+	while (!(can_mailbox_get_status(CAN1, 0) & CAN_MSR_MRDY)) {
+		int smthng = can_mailbox_read(CAN1, &can1_mailbox);
+		if (smthng == 0x07) {SET_LIGHT_OFF();}
+		if (smthng == 0x00) {SET_LIGHT_ON();}
+	}
 }
 
 

@@ -34,7 +34,7 @@
  * Support and FAQ: visit <a href="https://www.microchip.com/support/">Microchip Support</a>
  */
 
-#include "can.h"
+#include "can_asf.h"
 
 /** @cond 0 */
 /**INDENT-OFF**/
