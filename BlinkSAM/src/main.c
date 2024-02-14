@@ -141,12 +141,23 @@ int main(void)
 	can0_mailbox.uc_length = 8;
 	can_mailbox_write(CAN0, &can0_mailbox);
 
-
-	can_global_send_transfer_cmd(CAN0, CAN_TCR_MB0);
-	while (!(can_mailbox_get_status(CAN1, 0) & CAN_MSR_MRDY)) {
-		int smthng = can_mailbox_read(CAN1, &can1_mailbox);
-		if (smthng == 0x07) {SET_LIGHT_OFF();}
-		if (smthng == 0x00) {SET_LIGHT_ON();}
+	for (;;)
+	{
+		// can_global_send_transfer_cmd(CAN0, CAN_TCR_MB0);
+		while (!(can_mailbox_get_status(CAN1, 0) & CAN_MSR_MRDY)) {
+		}
+		can_mailbox_read(CAN1, &can1_mailbox);
+		const int data_rcvd = can1_mailbox.ul_datal;
+		switch (data_rcvd)
+		{
+			case LIGHT_ON_SUB_ID:
+				SET_LIGHT_ON();
+				break;
+			case LIGHT_OFF_SUB_ID:
+				SET_LIGHT_OFF();
+				break;
+		}
+		
 	}
 }
 
