@@ -12,4 +12,5 @@ Clone this repository
 
     git clone https://github.com/Repo-Factory/SAM4E_CAN
 
-`src/`
+`ASF` - Will hold some libraries and modules included from manufacturer with header definitions and functions to use
+`projects` - Will hold source code individual to this project 
