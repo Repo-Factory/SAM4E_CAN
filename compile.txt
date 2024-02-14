@@ -25,5 +25,5 @@ arm-none-eabi-gdb /path/to/binary
 (gdb) monitor reset
 
 
-
-
+To Build, from top dir
+mkdir build && cd build && cmake .. && make
