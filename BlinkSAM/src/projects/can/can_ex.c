@@ -1,10 +1,9 @@
 /* 
  * @ Zix
- * SAM4E CAN Library
+ * SAM4E CAN Example From ASF Page https://asf.microchip.com/docs/latest/sam4e/html/sam_can_quickstart.html
  */
 
 #include "asf.h"
-// #include "can.h"
 #include "can_asf.h"
 
 #define CAN1_PIO        	   PIOC
@@ -13,116 +12,23 @@
 #define CAN1_IRQ	    	   CAN1_IRQn
 #define CAN1_BASE       	   CAN1
 #define CAN1_PID        	   ID_CAN1
-volatile Can* canController = (volatile Can*)CAN1_BASE;
 
 #define LED0_PIO    		   PIOD
 #define LED0_PIN    		   PIO_PD22
 #define SET_LIGHT_ON()         LED0_PIO->PIO_CODR = LED0_PIN
 #define SET_LIGHT_OFF()        LED0_PIO->PIO_SODR = LED0_PIN
-#define TOGGLE(BIT) 		   BIT^=1
 #define LIGHT_ON_SUB_ID        0b00000001111
 #define LIGHT_OFF_SUB_ID       0b00000000001
-#define TOGGLE_PERIOD 		   100
 
-#define DISABLE_WR_PROTECT_CAN 0x0043414E
-#define DISABLE_WR_PROTECT_PMC 0x00504D43
-#define BAUD_RATE			   0x00053255
-
-#define LIGHT_MB 	   	0
-#define LIGHT_MB_MASK  	0b00000001111
-#define LIGHT_MB_START	0b00000000001
-
-void CAN1_Handler(void)
-{
-	const uint32_t id_received = canController->CAN_MB[LIGHT_MB].CAN_MID;
-	switch (id_received)
-	{
-		case LIGHT_ON_SUB_ID:
-			SET_LIGHT_ON();
-			break;
-		case LIGHT_OFF_SUB_ID:
-			SET_LIGHT_OFF();
-			break;
-	}
-}
-
-void transmit_can_message(void)
-{
-	canController->CAN_MB[1].CAN_MDL = 0x01;
-	canController->CAN_MB[1].CAN_MDH = 0x00;
-	canController->CAN_MB[1].CAN_MCR = 0x00;
-	canController->CAN_TCR |= 1u << 1;
-}
-
-static void hardware_init(void)
-{
-	/* 
-	 * This simply configures LED as output pin and clears it
-	 */
-	LED0_PIO->PIO_OER = LED0_PIN;
-    LED0_PIO->PIO_CODR = LED0_PIN;
-
-	// SysTick_Config(SystemCoreClock/TOGGLE_PERIOD);
-    // NVIC_EnableIRQ(SysTick_IRQn);
-	SET_LIGHT_OFF();
-	
-	/* 
-	 *	The CAN controller clock must be activated by the Power Management Controller (PMC) 
-	 *	and the CAN controller interrupt line must be enabled by the interrupt controller before use
-	 */
-	//  Set CAN_BR register
-	// This register can only be written if the WPEN bit is cleared in the CAN Write Protection Mode Registe
-
-	canController->CAN_WPMR = DISABLE_WR_PROTECT_CAN; 
-	PMC->PMC_WPMR  =  DISABLE_WR_PROTECT_PMC;
-	canController->CAN_BR = BAUD_RATE;
-	PMC->PMC_PCER1 |= PMC_PCER1_PID38; // Peripheral Identifier of CAN is 38, bit 6 of peripheral clock enable register corresponds to PID38 
-	NVIC_EnableIRQ(CAN1_IRQ);
-
-	/* 
-	 * Set I/O lines to be controlled by CAN peripheral instead of PIO Controller
-	 * We'll assign CAN as peripheral A on TX/RX pins by settings ABCD1 and ABCD2 to 0 for
-	 * corresponding pins.
-	 * Disable PIO Controller on TX and RX pins at PIO Disable Register
-	 */
-	CAN1_PIO->PIO_ABCDSR[0] &= ~(CAN1_RX_PIN | CAN1_TX_PIN);
-	CAN1_PIO->PIO_ABCDSR[1] &= ~(CAN1_RX_PIN | CAN1_TX_PIN);
-	CAN1_PIO->PIO_PDR       |=  (CAN1_RX_PIN | CAN1_TX_PIN);
-	
-	
-	// /* 
-	//  * Enable CAN Controller and interrupts on Mailbox 0
-	//  */
-	// canController->CAN_MR |= CAN_MR_CANEN;
-	// canController->CAN_MR &= ~CAN_MR_TTM; // Timestamping Mode is enabled by clearing the TTM bit in the CAN_MR
-
-	// /* 
-	//  * Mailbox 0 will accept messages based on an acceptance Mask, this will have to be set
-	//  * by us based on our ID layout. Configure the mailbox as a receive box.
-	//  */
-	canController->CAN_IER |= CAN_IER_MB0;
-	canController->CAN_MB[LIGHT_MB].CAN_MAM = LIGHT_MB_MASK;
-	canController->CAN_MB[LIGHT_MB].CAN_MID = LIGHT_MB_START; // Default, will change on message acceptance
-	canController->CAN_MB[LIGHT_MB].CAN_MMR = CAN_MMR_MOT_MB_RX_OVERWRITE;
-
-	/* 
-	 * Setup Transmission Mailbox
-	 */
-	canController->CAN_MB[1].CAN_MMR = CAN_MMR_MOT_MB_TX;
-	canController->CAN_IER |= CAN_IER_MB1;
-}
+volatile Can* canController = (volatile Can*)CAN1_BASE;
 
 int main(void)
 {
-  	// hardware_init();
 	const unsigned long ul_sysclk = SystemCoreClock;
 	can_mb_conf_t can0_mailbox;
 	can_mb_conf_t can1_mailbox;
-	pmc_enable_periph_clk(ID_CAN0);
 	pmc_enable_periph_clk(ID_CAN1);
-	can_init(CAN0, ul_sysclk, CAN_BPS_500K);
 	can_init(CAN1, ul_sysclk, CAN_BPS_500K);
-	can_reset_all_mailbox(CAN0);
 	can_reset_all_mailbox(CAN1);
 	can1_mailbox.ul_mb_idx = 0;
 	can1_mailbox.uc_obj_type = CAN_MB_RX_MODE;
@@ -134,12 +40,12 @@ int main(void)
 	can0_mailbox.uc_tx_prio = 15;
 	can0_mailbox.uc_id_ver = 0;
 	can0_mailbox.ul_id_msk = 0;
-	can_mailbox_init(CAN0, &can0_mailbox);
+	can_mailbox_init(CAN1, &can0_mailbox);
 	can0_mailbox.ul_id = CAN_MID_MIDvA(0x07);
 	can0_mailbox.ul_datal = 0x12345678;
 	can0_mailbox.ul_datah = 0x87654321;
 	can0_mailbox.uc_length = 8;
-	can_mailbox_write(CAN0, &can0_mailbox);
+	can_mailbox_write(CAN1, &can0_mailbox);
 
 	for (;;)
 	{
@@ -157,7 +63,6 @@ int main(void)
 				SET_LIGHT_OFF();
 				break;
 		}
-		
 	}
 }
 

@@ -19,8 +19,8 @@ add_executable(
  	src/ASF/sam/utils/cmsis/sam4e/source/templates/gcc/startup_sam4e.c
  	src/ASF/sam/utils/cmsis/sam4e/source/templates/system_sam4e.c
  	src/ASF/sam/utils/syscalls/gcc/syscalls.c
-    src/can_asf.c
- 	src/main.c
+    src/ASF/extension/can_asf.c
+ 	src/projects/can/can_ex.c                                                                 #******************#
 )
 
 # Include directories
@@ -36,6 +36,7 @@ include_directories(
     src/ASF/common/services/ioport/sam
     src/ASF/common/utils
     src/ASF/common/utils/interrupt
+    src/ASF/extension
     src/ASF/sam
     src/ASF/sam/boards
     src/ASF/sam/boards/sam4e_ek
