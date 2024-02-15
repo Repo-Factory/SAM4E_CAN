@@ -2,7 +2,8 @@ Building on Linux
 
 Need arm-none-eabi-gcc cross compiler for x86 to arm bare metal
 Create Cmake File from scratch, using linking file generated from Atmel Studio
-Compile like normal cmake mkdir build && cd build && cmake .. && make 
+Compile like normal cmake 
+    sudo rm -rf build && mkdir build && cd build && cmake .. && make 
 
 Download OpenOCD
 Create this Config file

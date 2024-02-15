@@ -20,6 +20,7 @@ add_executable(
  	src/ASF/sam/utils/cmsis/sam4e/source/templates/system_sam4e.c
  	src/ASF/sam/utils/syscalls/gcc/syscalls.c
     src/ASF/extension/can_asf.c
+    src/utils/quick_blink.c
  	src/projects/can/can_ex.c                                                                 #******************#
 )
 
@@ -68,6 +69,7 @@ include_directories(
     src/ASF/thirdparty/CMSIS/Lib
     src/ASF/thirdparty/CMSIS/Lib/GCC
     src/config
+    src/utils
 )
 
 target_compile_options(${PROJECT_NAME} PRIVATE

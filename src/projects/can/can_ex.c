@@ -5,6 +5,8 @@
 
 #include "asf.h"
 #include "can_asf.h"
+#include "led_f.h"
+#include "quick_blink.h"
 
 #define CAN1_PIO        	   PIOC
 #define CAN1_RX_PIN     	   PIO_PC12
@@ -12,11 +14,6 @@
 #define CAN1_IRQ	    	   CAN1_IRQn
 #define CAN1_BASE       	   CAN1
 #define CAN1_PID        	   ID_CAN1
-
-#define LED0_PIO    		   PIOD
-#define LED0_PIN    		   PIO_PD22
-#define SET_LIGHT_ON()         LED0_PIO->PIO_CODR = LED0_PIN
-#define SET_LIGHT_OFF()        LED0_PIO->PIO_SODR = LED0_PIN
 #define LIGHT_ON_SUB_ID        0b00000001111
 #define LIGHT_OFF_SUB_ID       0b00000000001
 
@@ -24,6 +21,7 @@ volatile Can* canController = (volatile Can*)CAN1_BASE;
 
 int main(void)
 {
+	quick_blink();
 	const unsigned long ul_sysclk = SystemCoreClock;
 	can_mb_conf_t can0_mailbox;
 	can_mb_conf_t can1_mailbox;
@@ -65,6 +63,12 @@ int main(void)
 		}
 	}
 }
+
+
+
+
+
+
 
 
 /* SAM4E Series [DATASHEET]
